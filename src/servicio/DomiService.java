@@ -7,7 +7,7 @@ import modelo.Repartidor;
 import java.util.*;
 
 public class DomiService {
-    private Map<String, List<Cliente>> clientes = new HashMap<>(); //Hashmap y no lista porque queremos que no se repita cliente por cedula
+    protected Map<String, Cliente> clientes = new HashMap<>(); //Hashmap y no lista porque queremos que no se repita cliente por cedula
     private final HashSet<String> barriosCubiertos = new HashSet<>(Set.of(
             "Chapinero", "Teusaquillo", "La Candelaria",
             "Usaquen", "Cedritos", "Fontibon",
@@ -25,24 +25,26 @@ public class DomiService {
             "Bosa", 18.0d
 
     )); //El operador nunca escribe los km porque podria equivocarse
-    private ArrayList<Repartidor> repartidores = new ArrayList<>();
-    private ArrayList<Pedido> pedidos = new ArrayList<>();
+    protected ArrayList<Repartidor> repartidores = new ArrayList<>();
+    protected ArrayList<Pedido> pedidos = new ArrayList<>();
 
     public DomiService(){
+/*
         initRepartidores();
+*/
         initClientes();
     }
 
-    private void initRepartidores(){
+    /*private void initRepartidores(){
         repartidores.add(new Bici("R-01", "Camila Torres"));
 
         repartidores.add(new Moto("R-02", "Andres Mejia"));
 
         repartidores.add(new Carro("R-03", "Jorge Pardo"));
-    }
+    }*/
 
     private void initClientes(){
-        Cliente cliente = new Cliente("Laura Gomez","1020304050","3109876543","Teusaquillo");
+        Cliente cliente = new Cliente("Laura Gomez","1020304050","3109876543","Teusaquillo","diagonal 38 #12 - 23");
         clientes.put(cliente.getCedula(),cliente);
         cliente.setNombre("Mateo Rincon");
         cliente.setCedula("1030405060");
