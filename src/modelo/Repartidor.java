@@ -27,4 +27,10 @@ public abstract class Repartidor {
         return disponible;
     }
 
+    public abstract double calcularCosto(double km);
+
+    public abstract double calcularTiempo(double km);
+
+    public abstract boolean puedeLlevar(double km, boolean esGrande);
+
 }
