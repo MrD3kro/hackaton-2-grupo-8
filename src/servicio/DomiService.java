@@ -37,9 +37,9 @@ public class DomiService {
     }
 
     private void initRepartidores(){
-        repartidores.add(new Bici(1, "Camila Torres", true));
-        repartidores.add(new Moto(2, "Andres Mejia", true));
-        repartidores.add(new Carro(3, "Jorge Pardo", true));
+        repartidores.add(new Bici("R-01", "Camila Torres", true));
+        repartidores.add(new Moto("R-02", "Andres Mejia", true));
+        repartidores.add(new Carro("R-03", "Jorge Pardo", true));
     }
 
     private void initClientes(){
@@ -59,11 +59,10 @@ public class DomiService {
     }
 
 
-    public void crearPedido(String cedula, String descripcion, boolean esPedidoGrande){
-
+    public void crearPedido(String cedula, String descripcion, boolean esPedidoGrande) {
         Cliente cliente = clientes.get(cedula);
 
-        if(cliente == null){
+        if (cliente == null) {
             throw new IllegalArgumentException("El cliente no esta registrado en nuestro servicio");
         }
 
@@ -74,17 +73,16 @@ public class DomiService {
         Repartidor repartidorAsignado = asignarRepartidor(distancia, esPedidoGrande);
 
         if (repartidorAsignado != null) {
-
             double costoBase = repartidorAsignado.calcularCosto(distancia);
             double costoFinal = aplicarRecargoLluvia(costoBase);
             double tiempo = repartidorAsignado.calcularTiempo(distancia);
 
+            int costoFinalInt = (int) Math.round(costoFinal);
+            int tiempoFinalInt = (int) Math.round(tiempo);
+
             repartidorAsignado.setDisponible(false);
 
-            Pedido nuevoPedido = new Pedido(cliente, descripcion, esPedidoGrande, distancia);
-            nuevoPedido.setCosto(costoFinal);
-            nuevoPedido.setTiempo(tiempo);
-            nuevoPedido.setRepartidorAsignado(repartidorAsignado.getNombre());
+            Pedido nuevoPedido = new Pedido(cliente, descripcion, esPedidoGrande, distancia, repartidorAsignado, costoFinalInt, tiempoFinalInt);
             pedidos.add(nuevoPedido);
 
             System.out.println(String.format("✔ Pedido #%d asignado a %s (%s) · EN_CAMINO · $%.2f · %.2f min",
@@ -95,19 +93,20 @@ public class DomiService {
 
     }
 
-    public Repartidor asignarRepartidor(double distancia, boolean esPedidoGrande){
+    public Repartidor asignarRepartidor(double distancia, boolean esPedidoGrande) {
 
         double menorCosto = Double.MAX_VALUE;
         double menorTiempo = Double.MAX_VALUE;
         Repartidor mejorRepartidor = null;
 
-        for(Repartidor repartidor: repartidores){
-            if(puedeAsignarse(repartidor, distancia, esPedidoGrande)){
+        for (Repartidor repartidor : repartidores) {
+            if (puedeAsignarse(repartidor, distancia, esPedidoGrande)) {
 
                 double costoRepartidor = aplicarRecargoLluvia(repartidor.calcularCosto(distancia));
                 double tiempoRepartidor = repartidor.calcularTiempo(distancia);
 
-                System.out.println(String.format("%s   %s   (%s)   %.2f   %.2f min", repartidor.getCodigo(), repartidor.getNombre(), repartidor.getTipo(), costoRepartidor, tiempoRepartidor));
+                System.out.println(String.format("%s   %s   (%s)   %.2f   %.2f min",
+                        repartidor.getCodigo(), repartidor.getNombre(), repartidor.getTipo(), costoRepartidor, tiempoRepartidor));
 
                 if (mejorRepartidor == null || costoRepartidor < menorCosto) {
                     mejorRepartidor = repartidor;
@@ -155,7 +154,60 @@ public class DomiService {
         return costoBase;
     }
 
+    private Pedido buscarPedido(int numero) {
+        for (Pedido p : pedidos) {
+            if (p.getNumero() == numero) {
+                return p;
+            }
+        }
+        return null;
+    }
 
+    public void entregarPedido(int numero) {
+        Pedido pedido = buscarPedido(numero);
+        if (pedido == null) {
+            throw new IllegalArgumentException("El pedido #" + numero + " no existe.");
+        }
+
+        if (!pedido.getEstado().equals("EN_CAMINO")) {
+            throw new IllegalArgumentException("El pedido no se puede entregar porque su estado es: " + pedido.getEstado());
+        }
+
+        pedido.setEstado("ENTREGADO");
+        pedido.getRepartidorAsignado().setDisponible(true);
+    }
+
+    public void cancelarPedido(int numero) {
+        Pedido pedido = buscarPedido(numero);
+        if (pedido == null) {
+            throw new IllegalArgumentException("El pedido #" + numero + " no existe.");
+        }
+
+        if (!pedido.getEstado().equals("EN_CAMINO")) {
+            throw new IllegalArgumentException("El pedido no se puede cancelar porque su estado es: " + pedido.getEstado());
+        }
+
+        pedido.setEstado("CANCELADO");
+        pedido.getRepartidorAsignado().setDisponible(true);
+    }
+
+    public ArrayList<Pedido> listarPedidos() {
+        return pedidos;
+    }
+
+    public void eliminarCliente(String cedula) {
+        if (!clientes.containsKey(cedula)) {
+            throw new IllegalArgumentException("El cliente con esa cédula no existe.");
+        }
+
+        for (Pedido pedido : pedidos) {
+            if (pedido.getCliente().getCedula().equals(cedula) && pedido.getEstado().equals("EN_CAMINO")) {
+                throw new IllegalArgumentException("No se puede eliminar el cliente porque tiene un pedido EN_CAMINO.");
+            }
+        }
+
+        clientes.remove(cedula);
+    }
 
     /*MENU
 public void opcionCrearPedido() {

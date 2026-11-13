@@ -2,12 +2,12 @@ package modelo;
 
 public abstract class Repartidor {
 
-    private int codigo;
+    private String codigo;
     private String nombre;
     private boolean disponible;
 
-    public Repartidor (int codigo, String nombre, boolean disponible){
-        if(codigo <= 0){
+    public Repartidor (String codigo, String nombre, boolean disponible){
+        if(codigo.isEmpty()){
         throw new IllegalArgumentException("El codigo debe ser valido");
         } else if (nombre.isBlank()) {
             throw new IllegalArgumentException("El nombre debe ser valido");
@@ -17,7 +17,7 @@ public abstract class Repartidor {
         this.disponible = disponible;
     }
 
-    public int getCodigo(){
+    public String getCodigo(){
         return codigo;
     }
     public String getNombre(){
@@ -38,6 +38,7 @@ public abstract class Repartidor {
     public boolean operarlluvia(){
         return true;
     }
+
     public abstract double calcularCosto(double km);
 
     public abstract double calcularTiempo(double km);
