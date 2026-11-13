@@ -1,8 +1,6 @@
 package servicio;
 
-import modelo.Cliente;
-import modelo.Pedido;
-import modelo.Repartidor;
+import modelo.*;
 
 import java.util.*;
 
@@ -25,23 +23,23 @@ public class DomiService {
             "Bosa", 18.0d
 
     )); //El operador nunca escribe los km porque podria equivocarse
-    protected ArrayList<Repartidor> repartidores = new ArrayList<>();
+    public ArrayList<Repartidor> repartidores = new ArrayList<>();
     protected ArrayList<Pedido> pedidos = new ArrayList<>();
 
     public DomiService(){
-/*
+
         initRepartidores();
-*/
+
         initClientes();
     }
 
-    /*private void initRepartidores(){
-        repartidores.add(new Bici("R-01", "Camila Torres"));
+    private void initRepartidores(){
+        repartidores.add(new Bici("R-01", "Camila Torres", true));
 
-        repartidores.add(new Moto("R-02", "Andres Mejia"));
+        repartidores.add(new Moto("R-02", "Andres Mejia",true));
 
-        repartidores.add(new Carro("R-03", "Jorge Pardo"));
-    }*/
+        repartidores.add(new Carro("R-03", "Jorge Pardo",true));
+    }
 
     private void initClientes(){
         Cliente cliente = new Cliente("1020304050","Laura Gomez","3109876543","Teusaquillo","diagonal 38 #12 - 23");
@@ -64,7 +62,7 @@ public class DomiService {
     }
 
 
-    public void crearPedido(String cedula, String descripcion, boolean esPedidoGrande) {
+    public Pedido crearPedido(String cedula, String descripcion, boolean esPedidoGrande) {
         Cliente cliente = clientes.get(cedula);
 
         if (cliente == null) {
@@ -88,10 +86,10 @@ public class DomiService {
 
             System.out.println(String.format("✔ Pedido #%d asignado a %s (%s) · EN_CAMINO",
                     nuevoPedido.getNumero(), repartidorAsignado.getNombre(), repartidorAsignado.getTipo()));
+            return nuevoPedido;
         } else {
             throw new IllegalArgumentException("No hay repartidores disponibles que puedan llevar este pedido.");
         }
-
     }
 
     public Repartidor asignarRepartidor(Double distancia, boolean esPedidoGrande) {
@@ -181,22 +179,5 @@ public class DomiService {
     }
 }
 
-    /*MENU
-public void opcionCrearPedido() {
-    Scanner sc = new Scanner(System.in);
 
-    System.out.print("Cedula del cliente: ");
-    String cedula = sc.nextLine();
 
-    System.out.print("Descripcion del pedido: ");
-    String descripcion = sc.nextLine();
-
-    System.out.print("¿El pedido es grande? (si/no): ");
-    boolean esPedidoGrande = sc.nextLine().trim().equalsIgnoreCase("si");
-
-    // Aquí LLAMAS a la función de tu DomiService pasándole los datos
-    domiService.crearPedido(cedula, descripcion, esPedidoGrande);
-}
-    * */
-
-}
