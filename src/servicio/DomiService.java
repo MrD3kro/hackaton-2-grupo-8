@@ -7,8 +7,8 @@ import modelo.Repartidor;
 import java.util.*;
 
 public class DomiService {
-    protected Map<String, Cliente> clientes = new HashMap<>(); //Hashmap y no lista porque queremos que no se repita cliente por cedula
-    private final HashSet<String> barriosCubiertos = new HashSet<>(Set.of(
+    public Map<String, Cliente> clientes = new HashMap<>(); //Hashmap y no lista porque queremos que no se repita cliente por cedula
+    private static final HashSet<String> barriosCubiertos = new HashSet<>(Set.of(
             "Chapinero", "Teusaquillo", "La Candelaria",
             "Usaquen", "Cedritos", "Fontibon",
             "Suba", "Kennedy", "Bosa"
@@ -44,13 +44,15 @@ public class DomiService {
     }*/
 
     private void initClientes(){
-        Cliente cliente = new Cliente("Laura Gomez","1020304050","3109876543","Teusaquillo","diagonal 38 #12 - 23");
+        Cliente cliente = new Cliente("1020304050","Laura Gomez","3109876543","Teusaquillo","diagonal 38 #12 - 23");
         clientes.put(cliente.getCedula(),cliente);
-        cliente.setNombre("Mateo Rincon");
-        cliente.setCedula("1030405060");
-        cliente.setTelefono("3109876543");
-        cliente.setBarrio("Usaquen");
-        clientes.put(cliente.getCedula(),cliente);
+        Cliente cliente2 = new Cliente("1030405060","Mateo Rincon","3109876543","Usaquen","diagonal 38 #12 - 23");
+        clientes.put(cliente2.getCedula(),cliente2);
+    }
+
+    public static boolean esBarrioValido(String barrio) {
+        if (barrio == null) return false;
+        return barriosCubiertos.contains(barrio.trim());
     }
 
     public double obtenerKm(String barrio) {
