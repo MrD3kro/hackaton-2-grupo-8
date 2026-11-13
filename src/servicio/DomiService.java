@@ -53,4 +53,23 @@ public class DomiService {
         clientes.put(cliente.getCedula(),cliente);
     }
 
+    public double obtenerKm(String barrio) {
+        Double km = distanciasBarriosKm.get(barrio);
+        if (km == null) {
+            throw new IllegalArgumentException("Barrio no cubierto: " + barrio);
+        }
+        return km;
+    }
+
+    public Pedido crearPedido(String cedula, String descripcion, boolean esGrande) {
+        Cliente cliente = clientes.get(cedula);
+        if (cliente == null) {
+            throw new IllegalArgumentException("No existe un cliente con cédula " + cedula);
+        }
+        double km = obtenerKm(cliente.getBarrio());
+        Pedido pedido = new Pedido(cliente, descripcion, esGrande, km);
+        pedidos.add(pedido);
+        return pedido;
+    }
+
 }
