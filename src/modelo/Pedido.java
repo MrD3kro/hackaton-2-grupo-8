@@ -52,6 +52,14 @@ public class Pedido {
         return estado;
     }
 
+    public int getTiempo() {
+        return tiempo;
+    }
+
+    public int getCosto() {
+        return costo;
+    }
+
     public void setEstado(String estado) {
         this.estado = estado;
     }
