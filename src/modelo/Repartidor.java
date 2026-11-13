@@ -1,10 +1,15 @@
 package modelo;
 
-public abstract class Repartidor {
+import java.util.ArrayList;
+
+public abstract class Repartidor implements Calificable{
 
     private String codigo;
     private String nombre;
     private boolean disponible;
+
+    private ArrayList<Integer> calificaciones = new ArrayList<>(); //el integer es porq no deja trabajar con int
+
 
     public Repartidor (String codigo, String nombre, boolean disponible){
         if(codigo.isEmpty()){
@@ -38,5 +43,27 @@ public abstract class Repartidor {
     public abstract double calcularTiempo(double km);
 
     public abstract boolean puedeLlevar(double km, boolean esGrande);
+
+
+    @Override
+    public void recibirCalificacion(int calificacion){
+        if(calificacion < 1 || calificacion > 5){
+            throw new IllegalArgumentException("El calificacion debe ser entre 1 y 5");
+        }
+        calificaciones.add(calificacion);
+    }
+
+    @Override
+    public double promedio() {
+        double sumarAcumulador=0;
+        if(calificaciones.isEmpty()){
+            return 0;
+        }
+        for(int i = 0; i < calificaciones.size(); i++){
+            sumarAcumulador += calificaciones.get(i);
+        }
+        return sumarAcumulador/calificaciones.size();
+
+    }
 
 }
