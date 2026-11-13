@@ -7,6 +7,9 @@ public class Cliente {
     private String barrio;
     private String direccion;
 
+    public Cliente() {
+    }
+
     public Cliente(String cedula, String nombre, String telefono, String barrio, String direccion) {
         setCedula(cedula); //Se hace de esta manera para un mejor uso de las validaciones
         setNombre(nombre);
