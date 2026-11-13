@@ -19,4 +19,8 @@ public class Bici extends Repartidor{
     public boolean puedeLlevar(double km, boolean esGrande) {
         return km <= 5 && !esGrande;
     }
+    @Override
+    public boolean operarlluvia(){
+        return false;
+    }
 }

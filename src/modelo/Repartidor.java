@@ -27,6 +27,17 @@ public abstract class Repartidor {
         return disponible;
     }
 
+    public void setDisponible(boolean disponible){
+        this.disponible = disponible;
+    }
+
+    public String getTipo(){
+        return getClass().getSimpleName();
+    }
+
+    public boolean operarlluvia(){
+        return true;
+    }
     public abstract double calcularCosto(double km);
 
     public abstract double calcularTiempo(double km);

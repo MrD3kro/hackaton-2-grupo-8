@@ -8,8 +8,8 @@ public class Pedido {
     private boolean esGrande;
     private double km;
     private String repartidorAsignado;
-    private int costo;
-    private int tiempo;
+    private double costo;
+    private double tiempo;
     private String estado;
 
     public Pedido(Cliente cliente, String descripcion, boolean esGrande, double km) {
@@ -44,5 +44,29 @@ public class Pedido {
     }
     public double getKm() {
         return km;
+    }
+
+    public String getRepartidorAsignado() {
+        return repartidorAsignado;
+    }
+
+    public void setRepartidorAsignado(String repartidorAsignado) {
+        this.repartidorAsignado = repartidorAsignado;
+    }
+
+    public double getCosto() {
+        return costo;
+    }
+
+    public void setCosto(double costo) {
+        this.costo = costo;
+    }
+
+    public double getTiempo() {
+        return tiempo;
+    }
+
+    public void setTiempo(double tiempo) {
+        this.tiempo = tiempo;
     }
 }

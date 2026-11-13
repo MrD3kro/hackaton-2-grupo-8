@@ -1,6 +1,9 @@
 package servicio;
 
+import modelo.Bici;
+import modelo.Carro;
 import modelo.Cliente;
+import modelo.Moto;
 import modelo.Pedido;
 import modelo.Repartidor;
 
@@ -29,28 +32,22 @@ public class DomiService {
     protected ArrayList<Pedido> pedidos = new ArrayList<>();
 
     public DomiService(){
-/*
         initRepartidores();
-*/
         initClientes();
     }
 
-    /*private void initRepartidores(){
-        repartidores.add(new Bici("R-01", "Camila Torres"));
-
-        repartidores.add(new Moto("R-02", "Andres Mejia"));
-
-        repartidores.add(new Carro("R-03", "Jorge Pardo"));
-    }*/
+    private void initRepartidores(){
+        repartidores.add(new Bici(1, "Camila Torres", true));
+        repartidores.add(new Moto(2, "Andres Mejia", true));
+        repartidores.add(new Carro(3, "Jorge Pardo", true));
+    }
 
     private void initClientes(){
-        Cliente cliente = new Cliente("Laura Gomez","1020304050","3109876543","Teusaquillo","diagonal 38 #12 - 23");
-        clientes.put(cliente.getCedula(),cliente);
-        cliente.setNombre("Mateo Rincon");
-        cliente.setCedula("1030405060");
-        cliente.setTelefono("3109876543");
-        cliente.setBarrio("Usaquen");
-        clientes.put(cliente.getCedula(),cliente);
+        Cliente laura = new Cliente("1020304050", "Laura Gomez", "3109876543", "Teusaquillo", "diagonal 38 #12 - 23");
+        clientes.put(laura.getCedula(), laura);
+
+        Cliente mateo = new Cliente("1030405060", "Mateo Rincon", "3109876543", "Usaquen", "calle 100 #15 - 40");
+        clientes.put(mateo.getCedula(), mateo);
     }
 
     public double obtenerKm(String barrio) {
@@ -64,44 +61,50 @@ public class DomiService {
 
     public void crearPedido(String cedula, String descripcion, boolean esPedidoGrande){
 
-        System.out.println("Cedula del cliente: ");
-
         Cliente cliente = clientes.get(cedula);
 
         if(cliente == null){
             throw new IllegalArgumentException("El cliente no esta registrado en nuestro servicio");
         }
 
-        Double distancia = distanciasBarriosKm.get(cliente.getBarrio());
+        double distancia = obtenerKm(cliente.getBarrio());
 
         System.out.println(String.format("Cotizando pedido para %s | %s | (%.2f km) ", cliente.getNombre(), cliente.getBarrio(), distancia));
 
-        Repartidor repartidorAsignado= asignarRepartidor(distancia, esPedidoGrande);
+        Repartidor repartidorAsignado = asignarRepartidor(distancia, esPedidoGrande);
 
         if (repartidorAsignado != null) {
+
+            double costoBase = repartidorAsignado.calcularCosto(distancia);
+            double costoFinal = aplicarRecargoLluvia(costoBase);
+            double tiempo = repartidorAsignado.calcularTiempo(distancia);
+
             repartidorAsignado.setDisponible(false);
 
             Pedido nuevoPedido = new Pedido(cliente, descripcion, esPedidoGrande, distancia);
+            nuevoPedido.setCosto(costoFinal);
+            nuevoPedido.setTiempo(tiempo);
+            nuevoPedido.setRepartidorAsignado(repartidorAsignado.getNombre());
             pedidos.add(nuevoPedido);
 
-            System.out.println(String.format("✔ Pedido #%d asignado a %s (%s) · EN_CAMINO",
-                    nuevoPedido.getNumero(), repartidorAsignado.getNombre(), repartidorAsignado.getTipo()));
+            System.out.println(String.format("✔ Pedido #%d asignado a %s (%s) · EN_CAMINO · $%.2f · %.2f min",
+                    nuevoPedido.getNumero(), repartidorAsignado.getNombre(), repartidorAsignado.getTipo(), costoFinal, tiempo));
         } else {
             throw new IllegalArgumentException("No hay repartidores disponibles que puedan llevar este pedido.");
         }
-        pedidos.add(new Pedido(cliente, descripcion, esPedidoGrande, distancia));
+
     }
 
-    public Repartidor asignarRepartidor(Double distancia, boolean esPedidoGrande){
+    public Repartidor asignarRepartidor(double distancia, boolean esPedidoGrande){
 
         double menorCosto = Double.MAX_VALUE;
-        double menorTiempo = Integer.MAX_VALUE;
+        double menorTiempo = Double.MAX_VALUE;
         Repartidor mejorRepartidor = null;
 
         for(Repartidor repartidor: repartidores){
-            if(repartidor.isDisponible() && (!esPedidoGrande || repartidor.getTipo().equals("Carro"))){
+            if(puedeAsignarse(repartidor, distancia, esPedidoGrande)){
 
-                double costoRepartidor = repartidor.calcularCosto(distancia);
+                double costoRepartidor = aplicarRecargoLluvia(repartidor.calcularCosto(distancia));
                 double tiempoRepartidor = repartidor.calcularTiempo(distancia);
 
                 System.out.println(String.format("%s   %s   (%s)   %.2f   %.2f min", repartidor.getCodigo(), repartidor.getNombre(), repartidor.getTipo(), costoRepartidor, tiempoRepartidor));
@@ -120,6 +123,39 @@ public class DomiService {
         }
         return mejorRepartidor;
     }
+
+    private boolean modoLluvia = false;
+
+    public boolean ismodoLluvia(){
+        return modoLluvia;
+    }
+
+    public void setModoLluvia(boolean modoLluvia){
+        this.modoLluvia = modoLluvia;
+    }
+
+    private boolean puedeAsignarse(Repartidor repartidor, double km, boolean esGrande){
+        if(!repartidor.isDisponible()){
+            return false;
+        }
+        if(!repartidor.puedeLlevar(km,esGrande)){
+            return false;
+        }
+        if(modoLluvia && !repartidor.operarlluvia()){
+            return false;
+        }
+        return true;
+    }
+
+    private double aplicarRecargoLluvia(double costoBase){
+        if(modoLluvia){
+            double recargo = costoBase * 0.20;
+            return costoBase + recargo;
+        }
+        return costoBase;
+    }
+
+
 
     /*MENU
 public void opcionCrearPedido() {
