@@ -42,15 +42,12 @@ public class DomiService {
 
         repartidores.add(new Carro("R-03", "Jorge Pardo"));
     }*/
-
+    //Modificacion de milo(para no pisarnos)
     private void initClientes(){
         Cliente cliente = new Cliente("Laura Gomez","1020304050","3109876543","Teusaquillo","diagonal 38 #12 - 23");
         clientes.put(cliente.getCedula(),cliente);
-        cliente.setNombre("Mateo Rincon");
-        cliente.setCedula("1030405060");
-        cliente.setTelefono("3109876543");
-        cliente.setBarrio("Usaquen");
-        clientes.put(cliente.getCedula(),cliente);
+        Cliente cliente2 = new Cliente("Mateo Rincon", "1030405060", "3109876543", "Usaquen", "Otra direccion");
+        clientes.put(cliente2.getCedula(), cliente2);
     }
 
 }
